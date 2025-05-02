@@ -1,0 +1,140 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Configuração ESLint para o Projeto ImportDataFile
+
+Este arquivo contém as regras de linting que são automaticamente aplicadas ao código do projeto.
+
+```json
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "prettier"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
+  "rules": {
+    // Arquitetura e organização
+    "max-depth": ["error", 3],
+    "max-lines-per-function": ["warn", 80],
+    "max-params": ["warn", 4],
+    
+    // TypeScript
+    "@typescript-eslint/explicit-function-return-type": ["warn", {
+      "allowExpressions": true
+    }],
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/naming-convention": [
+      "error",
+      // Controladores
+      {
+        "selector": "class",
+        "filter": "Controller$",
+        "format": ["PascalCase"]
+      },
+      // Serviços
+      {
+        "selector": "class",
+        "filter": "Service$",
+        "format": ["PascalCase"]
+      },
+      // Interfaces
+      {
+        "selector": "interface",
+        "format": ["PascalCase"]
+      }
+    ],
+    
+    // Boas práticas
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "no-throw-literal": "error",
+    "prefer-const": "error",
+    "no-var": "error",
+    
+    // Consistência de estilo
+    "semi": ["error", "always"],
+    "quotes": ["error", "double"],
+    "indent": ["error", 2]
+  },
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module"
+  },
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "overrides": [
+    {
+      "files": ["**/controllers/**/*.ts"],
+      "rules": {
+        // Regras específicas para controladores
+        "class-methods-use-this": "off"
+      }
+    },
+    {
+      "files": ["**/services/**/*.ts"],
+      "rules": {
+        // Regras específicas para serviços
+        "@typescript-eslint/explicit-function-return-type": "error"
+      }
+    }
+  ]
+}
+```
+
+## Explicação das Regras Principais
+
+### Regras de Arquitetura
+
+- **max-depth**: Limita a profundidade de aninhamento a 3 níveis para manter o código legível
+- **max-lines-per-function**: Sugere que funções não ultrapassem 80 linhas
+- **max-params**: Sugere não usar mais que 4 parâmetros por função
+
+### Regras de TypeScript
+
+- **explicit-function-return-type**: Requer tipos de retorno explícitos em funções
+- **no-explicit-any**: Proíbe o uso do tipo `any`
+- **naming-convention**: Impõe convenções de nomenclatura para classes e interfaces
+
+### Regras de Estilo
+
+- **semi**: Exige ponto e vírgula ao final das declarações
+- **quotes**: Padroniza o uso de aspas duplas
+- **indent**: Padroniza a indentação em 2 espaços
+
+## Uso
+
+Para usar estas regras de lint, assegure-se de instalar as dependências necessárias:
+
+```bash
+npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-prettier eslint-config-prettier prettier
+```
+
+## Integração com Editores
+
+### VS Code
+
+Adicione estas configurações ao seu `settings.json`:
+
+```json
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "eslint.validate": ["typescript"]
+}
+```
+
+### Cursor
+
+O Cursor já vem pré-configurado para utilizar essas regras automaticamente, verificando o código em tempo real.

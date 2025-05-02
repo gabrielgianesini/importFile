@@ -1,0 +1,77 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "prettier"],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
+  "rules": {
+    // Arquitetura e organização
+    "max-depth": ["error", 3],
+    "max-lines-per-function": ["warn", 80],
+    "max-params": ["warn", 4],
+
+    // TypeScript
+    "@typescript-eslint/explicit-function-return-type": [
+      "warn",
+      {
+        "allowExpressions": true
+      }
+    ],
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/naming-convention": [
+      "error",
+      // Controladores
+      {
+        "selector": "class",
+        "filter": "Controller$",
+        "format": ["PascalCase"]
+      },
+      // Serviços
+      {
+        "selector": "class",
+        "filter": "Service$",
+        "format": ["PascalCase"]
+      },
+      // Interfaces
+      {
+        "selector": "interface",
+        "format": ["PascalCase"]
+      }
+    ],
+
+    // Boas práticas
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "no-throw-literal": "error",
+    "prefer-const": "error",
+    "no-var": "error",
+
+    // Consistência de estilo
+    "semi": ["error", "always"],
+    "quotes": ["error", "double"],
+    "indent": ["error", 2]
+  },
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module"
+  },
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "overrides": [
+    {
+      "files": ["**/controllers/**/*.ts"],
+      "rules": {
+        // Regras específicas para controladores
+        "class-methods-use-this": "off"
+      }
+    },
+    {
+      "files": ["**/services/**/*.ts"],
+      "rules": {
+        // Regras específicas para serviços
+        "@typescript-eslint/explicit-function-return-type": "error"
+      }
+    }
+  ]
+}

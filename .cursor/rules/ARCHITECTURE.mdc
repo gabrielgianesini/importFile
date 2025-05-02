@@ -1,0 +1,158 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Arquitetura do Projeto ImportDataFile
+
+Este documento descreve a arquitetura técnica do projeto ImportDataFile, fornecendo detalhes sobre sua estrutura, componentes e fluxos de dados.
+
+## 🏗️ Visão Geral da Arquitetura
+
+O ImportDataFile segue uma arquitetura em camadas com clara separação de responsabilidades, baseada nos seguintes princípios:
+
+1. **Modularidade**: Componentes independentes e reusáveis
+2. **Separação de Responsabilidades**: Cada parte do sistema tem uma função bem definida
+3. **Desacoplamento**: Minimização de dependências entre módulos
+4. **Coesão**: Agrupamento de funcionalidades relacionadas
+
+## 📦 Componentes Principais
+
+### 1. Camada de API (Controllers)
+
+Localização: `src/controllers/`
+
+Esta camada é responsável por:
+- Receber requisições HTTP
+- Validar entradas
+- Delegar o processamento para a camada de serviço
+- Formatar respostas HTTP
+
+Componentes principais:
+- `importFile.controller.ts`: Controla o fluxo de importação de arquivos
+- `sendCsvFile.controller.ts`: Exemplo de envio de arquivo CSV via API
+
+### 2. Camada de Serviço (Services)
+
+Localização: `src/services/`
+
+Esta camada contém a lógica de negócio, incluindo:
+- Processamento de arquivos
+- Transformação de dados
+- Lógica específica para cada formato de arquivo
+
+Serviços implementados:
+- `csvFile.service.ts`: Processa arquivos CSV
+- `txtService.service.ts`: Processa arquivos TXT
+- `xlsxFile.service.ts`: Processa planilhas Excel (XLSX/XLS)
+
+### 3. Camada de Utilitários (Utils)
+
+Localização: `src/utils/`
+
+Contém funções auxiliares e utilitárias para:
+- Manipulação de arquivos
+- Formatação de dados
+- Funções comuns usadas por múltiplos serviços
+
+## 🔄 Fluxo de Dados
+
+```
+┌────────────┐     ┌────────────┐     ┌────────────┐     ┌────────────┐
+│   Cliente  │────>│ Controller │────>│  Service   │────>│  Response  │
+│   HTTP     │     │            │     │            │     │  JSON      │
+└────────────┘     └────────────┘     └────────────┘     └────────────┘
+```
+
+### Detalhamento do Fluxo:
+
+1. Cliente envia um arquivo via requisição HTTP multipart para o endpoint `/importFile`
+2. O controlador (`importFile.controller.ts`) recebe o arquivo e identifica sua extensão
+3. Com base na extensão, o controlador encaminha o arquivo para o serviço apropriado
+4. O serviço processa o arquivo e converte seu conteúdo para JSON
+5. O JSON é retornado ao cliente como resposta HTTP
+
+## 🔍 Detalhes da Implementação
+
+### Processamento de Arquivos CSV
+
+- Utiliza a biblioteca `csv-parse`
+- Suporta diferentes delimitadores (vírgula, ponto e vírgula)
+- Detecta cabeçalhos automaticamente
+- Implementado em `csvFile.service.ts`
+
+### Processamento de Arquivos TXT
+
+- Suporta diferentes codificações com `iconv-lite`
+- Implementa parsing baseado em linhas e separadores
+- Implementado em `txtService.service.ts`
+
+### Processamento de Planilhas Excel
+
+- Utiliza a biblioteca `exceljs`
+- Suporta formatos XLSX e XLS
+- Processa múltiplas planilhas
+- Implementado em `xlsxFile.service.ts`
+
+## 🔌 Interfaces e Contratos
+
+### Interface do Controlador
+
+```typescript
+interface Controller {
+  register(fastify: FastifyInstance): Promise<void>;
+}
+```
+
+### Interface do Serviço de Processamento de Arquivo
+
+```typescript
+interface FileService {
+  execute(buffer: Buffer): Promise<JSON>;
+}
+```
+
+## 📈 Escalabilidade e Extensibilidade
+
+A arquitetura foi projetada para ser facilmente extensível:
+
+1. **Novos Formatos de Arquivo**:
+   - Crie um novo serviço seguindo o padrão existente
+   - Implemente a lógica específica para o formato
+   - Adicione o novo formato ao switch no controlador
+
+2. **Escalabilidade**:
+   - Processamento assíncrono para arquivos grandes
+   - Possibilidade de implementar processamento em fila
+   - Estrutura preparada para extração de microserviços
+
+## 🛠️ Tecnologias e Frameworks
+
+### Core
+- **Fastify**: Framework web de alta performance
+- **TypeScript**: Linguagem fortemente tipada
+- **Node.js**: Runtime JavaScript
+
+### Processamento de Arquivos
+- **csv-parse**: Processamento de CSV
+- **exceljs**: Processamento de planilhas Excel
+- **iconv-lite**: Conversão de encodings
+
+### Infraestrutura
+- **@fastify/multipart**: Gerenciamento de requisições multipart
+
+## 🔒 Segurança
+
+- Validação do tipo de arquivo por extensão
+- Limite de tamanho para upload de arquivos (10MB)
+- Sanitização de entradas
+
+## 📊 Monitoramento e Logging
+
+- Logs integrados do Fastify
+- Tratamento de erros em cada camada
+- Respostas de erro padronizadas
+
+---
+
+Este documento serve como referência para desenvolvedores que trabalham no projeto ImportDataFile, garantindo que todos compreendam a arquitetura e sigam os mesmos padrões de implementação.

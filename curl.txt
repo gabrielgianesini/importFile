@@ -1,0 +1,9 @@
+
+###Teste Convert CSV in JSON
+curl.exe -X POST http://localhost:3000/importFile -H "Content-Type: multipart/form-data" -F "file=@teste.csv"
+
+
+curl --request POST \
+  --url http://localhost:3000/importFile \
+  --header 'Content-Type: multipart/form-data' \
+  --form 'file=@C:\Users\Gabriel\Desktop\teste.csv'

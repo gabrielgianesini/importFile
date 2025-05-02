@@ -1,0 +1,23 @@
+{
+  "name": "nodejs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@fastify/multipart": "^9.0.3",
+    "@types/csv-parse": "^1.1.12",
+    "@types/form-data": "^2.5.0",
+    "axios": "^1.6.8",
+    "csv-parse": "^5.6.0",
+    "csv-parser": "^3.2.0",
+    "exceljs": "^4.4.0",
+    "fastify": "^5.3.2",
+    "form-data": "^4.0.0",
+    "iconv-lite": "^0.6.3",
+    "typescript": "^5.8.3"
+  }
+}

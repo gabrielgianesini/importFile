@@ -1,0 +1,28 @@
+### send file CSV
+POST http://localhost:3000/importFile
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="teste.csv"
+Content-Type: text/csv
+
+< ./teste.csv
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+
+### send Exemplo com axios
+get http://localhost:3000/sendCsvFile
+
+
+### send file XLSX
+POST http://localhost:3000/importFile
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="teste.xlsx"
+Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+
+< ./teste.xlsx
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+

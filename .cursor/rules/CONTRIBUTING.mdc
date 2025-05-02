@@ -1,0 +1,132 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Diretrizes de Contribuição para o ImportDataFile
+
+## Arquitetura do Projeto
+
+Este documento estabelece as regras e papéis (roles) para manter a consistência arquitetural do projeto e garantir que qualquer alteração siga os mesmos padrões de design e implementação.
+
+## 📋 Princípios Gerais
+
+1. **Separação de Responsabilidades**: Mantenha uma clara separação entre controladores, serviços e utilitários.
+2. **Código Limpo**: Escreva código legível, com nomes descritivos e bem documentado.
+3. **TypeScript First**: Utilize tipagem forte e aproveite todos os recursos do TypeScript.
+4. **Tolerância a Falhas**: Implemente tratamento de erros adequado em todas as camadas.
+5. **Padronização**: Siga os padrões de código já estabelecidos no projeto.
+
+## 🏗️ Estrutura e Responsabilidades (Roles)
+
+### Controladores (`src/controllers/`)
+
+**Responsabilidades:**
+- Receber e validar requisições HTTP
+- Chamar os serviços apropriados
+- Formatar respostas HTTP
+- Gerenciar erros de nível de aplicação
+
+**Regras:**
+- Não implementar lógica de negócio diretamente nos controladores
+- Nomear arquivos com o padrão `*.controller.ts`
+- Implementar a interface de registro para o Fastify
+- Retornar respostas HTTP com códigos de status apropriados
+
+### Serviços (`src/services/`)
+
+**Responsabilidades:**
+- Implementar toda a lógica de negócio
+- Processar e transformar dados
+- Interagir com fontes de dados externas
+- Gerenciar erros de domínio
+
+**Regras:**
+- Cada serviço deve ter uma única responsabilidade bem definida
+- Nomear arquivos com o padrão `*.service.ts`
+- Não depender diretamente de frameworks HTTP/Web
+- Implementar tratamento adequado de erros
+
+### Utilitários (`src/utils/`)
+
+**Responsabilidades:**
+- Fornecer funções auxiliares reutilizáveis
+- Abstrair operações comuns
+- Implementar helpers que podem ser usados em múltiplos contextos
+
+**Regras:**
+- Funções devem ser pequenas e fazer apenas uma coisa
+- Código deve ser independente do contexto da aplicação
+- Não deve conter lógica de negócio específica
+
+## 📝 Convenções de Código
+
+### Nomeação
+
+- **Classes**: PascalCase (ex: `CsvFileService`)
+- **Interfaces**: PascalCase (ex: `FileProcessor`)
+- **Funções**: camelCase (ex: `processFile()`)
+- **Variáveis**: camelCase (ex: `fileData`)
+- **Constantes**: UPPER_SNAKE_CASE (ex: `MAX_FILE_SIZE`)
+- **Nomes de arquivo**: camelCase para arquivos de implementação, PascalCase para interfaces
+
+### Boas Práticas
+
+1. **Tipagem**: Utilize tipagem explícita ao invés de `any`
+2. **Assincronicidade**: Use `async/await` ao invés de callbacks
+3. **Métodos**: Mantenha métodos com tamanho reduzido e com responsabilidade única
+4. **Comentários**: Documente funções públicas com JSDoc
+
+## 🔄 Processo de Contribuição
+
+1. Antes de iniciar uma nova funcionalidade, analise a arquitetura existente
+2. Mantenha-se fiel às convenções e estilos do projeto
+3. Adicione testes para novas funcionalidades
+4. Documente qualquer comportamento não óbvio
+5. Atualize a documentação quando necessário
+
+## ⚙️ Fluxo de Processamento de Arquivos
+
+Este projeto segue um fluxo específico para processamento de arquivos:
+
+1. **Recebimento**: Controlador recebe o arquivo via HTTP multipart
+2. **Identificação**: Tipo de arquivo é identificado pela extensão
+3. **Processamento**: Serviço específico para o tipo de arquivo é chamado
+4. **Conversão**: Arquivo é convertido para formato JSON
+5. **Resposta**: JSON é retornado para o cliente
+
+Qualquer alteração deve respeitar este fluxo e manter a coesão entre os componentes.
+
+## 📊 Diagrama da Arquitetura
+
+```
+┌───────────────────┐     ┌───────────────────┐     ┌───────────────────┐
+│   HTTP Request    │────>│    Controllers    │────>│     Services      │
+│  (File Upload)    │     │                   │     │                   │
+└───────────────────┘     └───────────────────┘     └───────────────────┘
+                                   │                          │
+                                   │                          │
+                                   ▼                          ▼
+                          ┌───────────────────┐     ┌───────────────────┐
+                          │      Utils        │<────│   File Processing │
+                          │                   │     │                   │
+                          └───────────────────┘     └───────────────────┘
+                                   │                          │
+                                   │                          │
+                                   ▼                          ▼
+                          ┌───────────────────┐     ┌───────────────────┐
+                          │   HTTP Response   │<────│    JSON Output    │
+                          │                   │     │                   │
+                          └───────────────────┘     └───────────────────┘
+```
+
+## 🧩 Extensibilidade
+
+Para adicionar suporte a novos formatos de arquivo:
+
+1. Crie um novo serviço em `src/services/` seguindo o padrão dos existentes
+2. Implemente a lógica de processamento específica para o formato
+3. Atualize o controlador `importFile.controller.ts` para reconhecer o novo formato
+4. Adicione casos de teste para validar o funcionamento
+
+Este projeto foi projetado para ser facilmente extensível para novos formatos, mantendo a mesma arquitetura e fluxo de dados.

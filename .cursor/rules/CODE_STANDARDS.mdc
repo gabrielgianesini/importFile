@@ -1,0 +1,246 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Padrões de Código - ImportDataFile
+
+Este documento estabelece os padrões de código a serem seguidos no desenvolvimento do projeto ImportDataFile.
+
+## 📝 Estilo de Código
+
+### Formatação
+
+- **Indentação**: 2 espaços (sem tabs)
+- **Largura máxima**: 100 caracteres por linha
+- **Quebra de linha**: LF (Unix-style)
+- **Espaçamento**: Espaços após vírgulas, operadores e em volta de blocos
+- **Ponto e vírgula**: Sempre utilizar ao final das instruções
+
+### Nomenclatura
+
+- **Nomes de arquivos**:
+  - Controladores: `nome.controller.ts`
+  - Serviços: `nome.service.ts`
+  - Utilitários: `nome.util.ts`
+  - Interfaces: `INome.ts` ou incluídas no arquivo de implementação
+
+- **Variáveis e funções**:
+  - Utilizar camelCase: `minhaVariavel`, `minhaFuncao()`
+  - Nomes descritivos e significativos
+  - Evitar abreviações não-padrão
+
+- **Classes**:
+  - Utilizar PascalCase: `MinhaClasse`
+  - Nomes de classes devem ser substantivos
+  - Classes controladores devem terminar com `Controller`
+  - Classes de serviço devem terminar com `Service`
+
+- **Interfaces**:
+  - Utilizar PascalCase: `MinhaInterface`
+  - Não utilizar prefixo "I" (ex: não usar `IMinhaInterface`)
+
+- **Constantes**:
+  - Utilizar UPPER_SNAKE_CASE: `MINHA_CONSTANTE`
+
+## 🧩 Organização de Código
+
+### Estrutura de Arquivos
+
+```
+src/
+  controllers/    # Controladores da aplicação
+  services/       # Serviços com lógica de negócio
+  utils/          # Funções utilitárias
+  index.ts        # Ponto de entrada da aplicação
+```
+
+### Estrutura de Arquivos Individuais
+
+- **Importações**: Ordenadas por módulos nativos, módulos externos e módulos locais
+- **Exportações**: Preferir exportação nomeada, exceto para a exportação principal
+- **Classes**: Definir interfaces ou types antes da implementação da classe
+
+### Exemplo de Estrutura de Arquivo
+
+```typescript
+// Importações de módulos nativos
+import fs from 'fs';
+import path from 'path';
+
+// Importações de módulos externos
+import { FastifyInstance } from 'fastify';
+import { parse } from 'csv-parse';
+
+// Importações de módulos locais
+import { formatData } from '../utils/format.util';
+
+// Interfaces e tipos
+interface ProcessResult {
+  success: boolean;
+  data: any[];
+}
+
+// Implementação da classe
+export class CsvFileService {
+  // Métodos e propriedades
+}
+
+// Exportação da instância
+export const csvFileService = new CsvFileService();
+```
+
+## 🔍 Práticas de Código
+
+### TypeScript
+
+- **Tipagem Estrita**: Habilitar `strict: true` no tsconfig.json
+- **Tipos Explícitos**: Definir tipos para parâmetros de funções e retornos
+- **Inferência de Tipos**: Utilizar quando for óbvio o tipo
+- **Evitar `any`**: Criar tipos ou interfaces apropriados ao invés de usar `any`
+
+### Async/Await
+
+- Preferir `async/await` ao invés de Promises encadeadas ou callbacks
+- Utilizar try/catch para tratamento de erros em código assíncrono
+
+```typescript
+// Bom
+async function processFile(buffer: Buffer): Promise<Result> {
+  try {
+    const result = await parseBuffer(buffer);
+    return result;
+  } catch (error) {
+    console.error('Erro ao processar arquivo:', error);
+    throw new Error('Falha ao processar arquivo');
+  }
+}
+
+// Evitar
+function processFile(buffer: Buffer): Promise<Result> {
+  return parseBuffer(buffer)
+    .then(result => {
+      return result;
+    })
+    .catch(error => {
+      console.error('Erro ao processar arquivo:', error);
+      throw new Error('Falha ao processar arquivo');
+    });
+}
+```
+
+### Gestão de Erros
+
+- Utilizar classes de erro customizadas para diferentes tipos de erros
+- Sempre logar erros com informações suficientes para debug
+- Retornar mensagens de erro amigáveis para o usuário
+
+```typescript
+// Exemplo de classe de erro customizada
+export class FileProcessingError extends Error {
+  constructor(message: string, public readonly originalError?: Error) {
+    super(message);
+    this.name = 'FileProcessingError';
+  }
+}
+
+// Uso
+try {
+  // código que pode falhar
+} catch (error) {
+  throw new FileProcessingError('Falha ao processar o arquivo', error);
+}
+```
+
+## 🧪 Testes
+
+### Estrutura de Testes
+
+- Testes devem ser organizados em uma estrutura espelhada ao código fonte
+- Arquivos de teste devem ter o sufixo `.spec.ts` ou `.test.ts`
+
+```
+src/
+  services/
+    csvFile.service.ts
+tests/
+  services/
+    csvFile.service.spec.ts
+```
+
+### Práticas de Teste
+
+- Testar casos de sucesso e casos de erro
+- Utilizar mocks para dependências externas
+- Cada teste deve ser independente
+- Nomes de testes devem descrever o comportamento esperado
+
+```typescript
+describe('CsvFileService', () => {
+  it('deve converter CSV válido para JSON', async () => {
+    // Arranjo
+    const buffer = Buffer.from('header1,header2\nvalue1,value2');
+    const service = new CsvFileService();
+    
+    // Ação
+    const result = await service.execute(buffer);
+    
+    // Asserção
+    expect(result).toEqual([
+      { header1: 'value1', header2: 'value2' }
+    ]);
+  });
+  
+  it('deve lançar erro ao processar CSV inválido', async () => {
+    // Arranjo
+    const buffer = Buffer.from('conteúdo inválido');
+    const service = new CsvFileService();
+    
+    // Ação e Asserção
+    await expect(service.execute(buffer)).rejects.toThrow();
+  });
+});
+```
+
+## 📋 Documentação
+
+### Comentários
+
+- Utilizar JSDoc para documentar funções e classes públicas
+- Comentários devem explicar "por quê", não "o quê" ou "como"
+- Evitar comentários óbvios
+
+```typescript
+/**
+ * Processa um arquivo CSV e converte para formato JSON.
+ * 
+ * @param buffer - Buffer contendo o conteúdo do arquivo CSV
+ * @returns JSON com os dados do arquivo processado
+ * @throws {FileProcessingError} Quando o arquivo não pode ser processado
+ */
+public async execute(buffer: Buffer): Promise<JSON> {
+  // Implementação
+}
+```
+
+### README e Documentação
+
+- Manter o README.md atualizado com instruções de instalação e uso
+- Documentar APIs públicas com exemplos
+
+## 🔄 Gestão de Dependências
+
+- Declarar versões exatas nas dependências (`"package": "1.2.3"` ao invés de `"package": "^1.2.3"`)
+- Revisar dependências periodicamente para atualizações de segurança
+- Minimizar o número de dependências externas
+
+## 🛡️ Segurança
+
+- Validar todas as entradas de usuário
+- Sanitizar dados antes de processar
+- Implementar limites para tamanhos de arquivo
+- Não expor detalhes de erros internos nas respostas API
+
+---
+
+Estes padrões devem ser seguidos por todos os desenvolvedores que trabalham no projeto ImportDataFile. Recomenda-se utilizar ferramentas de lint e formatação automática (ESLint, Prettier) para garantir a conformidade.
